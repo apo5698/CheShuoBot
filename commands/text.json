@@ -1,0 +1,12 @@
+{
+  "help": [
+    "?roll: Roll a number of value",
+    "?help: Open help text",
+    "?about: Display bot infomation"
+  ],
+  "about": [
+    "Author: [winter](https://apo5698.github.io)",
+    "GitHub: https://github.com/apo5698/WhatToEat"
+  ],
+  "cheshuo": "https://www.youtube.com/watch?v=HGmmLbsAD_8"
+}
