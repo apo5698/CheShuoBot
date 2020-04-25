@@ -1,2 +1,3 @@
-# WhatToEat
-A Discord bot - Decide what to eat today
+# CheShuoBot
+
+A Discord bot
