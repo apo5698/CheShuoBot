@@ -1,64 +1,82 @@
+const rollText = require('./roll.json');
+
 /**
  * Return a random integer within given range.
- * @param {number} min minimum bound
- * @param {number} max maximum bound
+ * @param {number} from minimum bound
+ * @param {number} to maximum bound
  */
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  const int = Math.floor(Math.random() * (max - min + 1)) + min;
-  console.log(`NUM   {${min}:${max}} => ${int}`.yellow);
+function randomInt(from, to) {
+  from = Math.ceil(from);
+  to = Math.floor(to);
+  const int = Math.floor(Math.random() * (to - from + 1)) + from;
+  console.log(`INT   {${from}:${to}} => ${int}`.yellow);
   return int;
 }
 
 /**
  * Return a random item in given array.
- * @param {any[]} array array with elements
+ * @param {Object[]} array array with elements
  */
-function getRandomItem(array) {
-  const index = getRandomInt(0, array.length - 1);
+function randomItem(array) {
+  const index = randomInt(0, array.length - 1);
   const value = array[index];
   console.log(`    ITEM  {${array}}[${index}]: ${value}`.yellow);
   return value;
 }
 
 module.exports = {
-  name: "roll",
-  description: "Roll from numbers or values",
-  execute(message, args) {
-    process.stdout.write("RAND".black.bgYellow);
-    var item, min, max;
-    if (args.length > 1) {
-      min = 0;
-      max = args.length;
-      range = args;
-      item = getRandomItem(args);
-    } else {
-      if (args.length == 0) {
-        min = 1;
-        max = 100;
+  name: 'roll',
+  description: 'Roll from numbers or values',
+  execute(args) {
+    process.stdout.write('RAND'.black.bgYellow);
+
+    let range = args, item;
+    // ?roll: default number range {1:100}
+    if (args.length == 0) {
+      range = `${rollText.default_min}-${rollText.default_max}`;
+      item = randomInt(rollText.default_min, rollText.default_max);
+    }
+    else if (args.length == 1) {
+      // ?roll <num1-num2>: number range {num1:num2}
+      if (args[0].match(/\d+-\d+/g)) {
+        const dash = args[0].split('-');
+        let from = parseInt(dash[0]);
+        let to = parseInt(dash[1]);
+        range = `${from}-${to}`;
+        if (from > to) {
+          const temp = from;
+          from = to;
+          to = temp;
+        }
+        item = randomInt(from, to);
       }
-      if (args.length == 1) {
-        if (args[0].match(/\d+-\d+/)) {
-          const range = args[0].split("-");
-          min = parseInt(range[0]);
-          max = parseInt(range[1]);
-          if (min > max) {
-            var temp = min;
-            min = max;
-            max = temp;
+      // ?roll <num>: number range {1:num}
+      else if (args[0].match(/\d+/g)) {
+        range = `${rollText.default_min}-${args[0]}`;
+        item = randomInt(rollText.default_min, args[0]);
+      }
+      // ?roll <item>: item in roll.json
+      else {
+        let valid = false;
+        for (const t in rollText) {
+          if (args[0] === t) {
+            valid = true;
+            range = rollText[args[0]];
+            item = randomItem(range);
           }
-        } else if (parseInt(args[0])) {
-          min = 1;
-          max = args[0];
-        } else {
-          console.log("INVALID".yellow);
+        }
+        // Invalid argument
+        if (!valid) {
+          console.log('INVALID'.yellow);
           return NaN;
         }
       }
-      range = `${min}-${max}`;
-      item = getRandomInt(min, max);
     }
+    // ?roll <item1> <item2> ...: multiple items
+    else if (args.length > 1) {
+      item = randomItem(args);
+    }
+
     return [range, item];
   },
 };

@@ -1,0 +1,13 @@
+{
+  "default_min": 1,
+  "default_max": 100,
+  "game": [
+    "Counter-Strike: Global Offsensive",
+    "Dota 2",
+    "League of Legends",
+    "Grand Theft Auto V",
+    "PLAYERUNKNOWN'S BATTLEGROUNDS",
+    "Tom Clancy's Rainbow Six Siege",
+    "VALORANT"
+  ]
+}
