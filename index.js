@@ -27,28 +27,41 @@ function embed() {
 
 // Login
 client.once('ready', () => {
-  console.log(`[${util.getCurrentTime()}](init)`.grey);
+  util.log('(init)'.grey);
 });
 client.login(token);
-console.log('Login successful');
+util.log('Login successful');
 
 // Listen
 client.on('message', (msg) => {
+  // Ignore non-command messages
   if (!config.prefix.includes(msg.content.charAt(0)) && !msg.author.bot) return;
 
-  let msgLog =
-    `[${util.getCurrentTime()}]` +
-    `(${msg.guild.name})<@${msg.member.user.tag}>: `;
+  const msgServerName = msg.guild.name;
+  const msgUserName = msg.member.user.tag;
+  let msgContent;
   // User tag in message (mention)
   if (msg.content.match(/<@[!]?\d+>/)) {
     const user = msg.mentions.users.first();
-    msgLog += `<@${user.username}#${user.discriminator}>`;
+    msgContent = `<@${user.username}#${user.discriminator}>`;
   }
+  // Normal message
   else {
-    msgLog += msg.content;
+    msgContent = msg.content;
   }
-  console.log(msg.author.bot ? msgLog.blue : msgLog);
+  const msgLog = `(${msgServerName})<@${msgUserName}>: ${msgContent}`;
+
+  // Bot messages in color blue
+  util.log(msg.author.bot ? msgLog.blue : msgLog);
+  // No need to execute if it is a bot message
   if (msg.author.bot) return;
+  // ?????
+  config.prefix.forEach((e) => {
+    if (msg.content.match(new RegExp(`^[${e}]+$`, 'g'))) {
+      util.log(`<${msgUserName}> feels confused...`);
+      return;
+    }
+  });
 
   const args = msg.content
     .replace(/\s+/g, ' ')
@@ -59,33 +72,40 @@ client.on('message', (msg) => {
   const cmd = args.shift().toLowerCase();
   const channel = msg.channel;
 
-  let reply = 'command not supported:(';
+  let reply;
   switch (cmd) {
-  case 'a':
-  case 'about':
-    reply = client.commands.get('about').execute();
-    break;
-  case 'h':
-  case 'help':
-    reply = client.commands.get('help').execute();
-    break;
-  case 'r':
-  case 'roll': {
-    const roll = client.commands.get('roll').execute(args);
-    if (Number.isNaN(roll)) return;
-    reply = embed()
-      .setTitle(roll[1])
-      .setDescription(`from [${roll[0]}]`);
-    break;
+    case 'a':
+    case 'about':
+      reply = client.commands.get('about').execute();
+      break;
+    case 'h':
+    case 'help':
+      reply = client.commands.get('help').execute();
+      break;
+    case 'p':
+    case 'play':
+      // TODO: implement
+      // reply = client.commands.get('play').execute();
+      break;
+    case 'r':
+    case 'roll': {
+      const roll = client.commands.get('roll').execute(args);
+      if (!roll) return;
+      // Result as title
+      // Range as description
+      reply = embed().setTitle(roll[1]).setDescription(`from\n[${roll[0]}]`);
+      break;
+    }
+    case 'shit':
+    case 'cesuo':
+    case 'cheshuo':
+      reply = text.cheshuo;
+      break;
+    default:
+      util.err('Command undefined');
   }
-  case 'shit':
-  case 'cesuo':
-  case 'cheshuo':
-    reply = text.cheshuo;
-    break;
-  default:
-    reply = `${cmd}: ${reply}`;
-  }
+
+  if (!reply) return;
   channel.send(reply);
 });
 

@@ -1,6 +1,7 @@
 {
   "default_min": 1,
   "default_max": 100,
+  "dice": [1, 2, 3, 4, 5, 6],
   "game": [
     "Counter-Strike: Global Offsensive",
     "Dota 2",
@@ -9,5 +10,15 @@
     "PLAYERUNKNOWN'S BATTLEGROUNDS",
     "Tom Clancy's Rainbow Six Siege",
     "VALORANT"
+  ],
+  "csgo": [
+    "de_cache",
+    "de_dust2",
+    "de_inferno",
+    "de_mirage",
+    "de_nuke",
+    "de_overpass",
+    "de_train",
+    "de_cbble"
   ]
 }
